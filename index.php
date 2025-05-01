@@ -119,7 +119,10 @@ $f3->route('POST /Login',
 		// TODO validar correo en json
 		// TODO Control de error de la $DB
 		try {
-			$R = $db->exec('Select id from  Usuario where uname ="'.$jsB['uname'].'" and password = md5("'.$jsB['password'].'");');
+
+      $stmt = $db->prepare('SELECT id FROM Usuario WHERE uname = ? AND password = md5(?)');
+      $stmt->execute([$jsB['uname'], $jsB['password']]);
+      $R = $stmt->fetchAll();
 		} catch (Exception $e) {
 			echo '{"R":-2}';
 			return;
