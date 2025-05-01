@@ -71,7 +71,8 @@ $f3->route('POST /Registro',
 		// TODO validar correo en json
 		// TODO Control de error de la $DB
 		try {
-			$R = $db->exec('insert into Usuario values(null,"'.$jsB['uname'].'","'.$jsB['email'].'",md5("'.$jsB['password'].'"))');
+      $stmt = $db->prepare('INSERT INTO Usuario (id, uname, email, password) VALUES (null, ?, ?, md5(?))');
+      $R = $stmt->execute([$jsB['uname'], $jsB['email'], $jsB['password']]);
 		} catch (Exception $e) {
 			echo '{"R":-2}';
 			return;
