@@ -1,11 +1,16 @@
+##  Bloquea listado de directorios
+Options -Indexes
+
 # Enable rewrite engine and route requests to framework
 RewriteEngine On
  
 # Some servers require you to specify the `RewriteBase` directive
 # In such cases, it should be the path (relative to the document root)
 # containing this .htaccess file
- 
-RewriteRule ^(lib|tmp)\/|\.(ini|php)$ - [R=404]
+
+RewriteRule ^(lib|tmp|vendor|node_modules|config|tests|private)/ - [R=404,L]
+RewriteRule \.(ini|php|sql|bak|log|env|lock|gitignore|htaccess|htpasswd)$ - [R=404,L]
+RewriteRule ^(composer\.json|composer\.lock|package\.json|yarn\.lock|Dockerfile|Makefile|README\.md|readme\.txt|phpunit\.xml)$ - [R=404,L]
  
 RewriteCond %{REQUEST_FILENAME} !-l
 RewriteCond %{REQUEST_FILENAME} !-f
