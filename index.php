@@ -247,8 +247,6 @@ $f3->route('POST /Descargar',
                      INNER JOIN AccesoToken a ON i.id_Usuario = a.id_Usuario 
                      WHERE i.id = ? AND a.token = ?');
       $stmt->execute([$idImagen, $TKN]); // Añadir $TKN como parámetro
-
-      $stmt->execute([$TKN]);
       $R = $stmt->fetchAll();
 		} catch (Exception $e) {
 			echo '{"R":-2}';
