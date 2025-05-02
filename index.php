@@ -161,6 +161,8 @@ $f3->route('POST /Imagen',
 		$jsB = json_decode($Cuerpo,true);
 		/////////////
 		$R = array_key_exists('name',$jsB) && array_key_exists('data',$jsB) && array_key_exists('ext',$jsB) && array_key_exists('token',$jsB);
+    $ext = strtolower($jsB['ext']);
+
 		// TODO checar si estan vacio los elementos del json
 		if (!$R){
 			echo '{"R":-1}';
@@ -196,6 +198,7 @@ $f3->route('POST /Imagen',
     $stmt->execute([$jsB['name'], 'img/', $id_Usuario]);
     $idImagen = $db->lastInsertId();
     $stmt = $db->prepare('UPDATE Imagen SET ruta = ? WHERE id = ?');
+
     $stmt->execute(["img/$idImagen.$ext", $idImagen]);
 
 		// Mover archivo a su nueva locacion
