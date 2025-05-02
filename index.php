@@ -129,7 +129,7 @@ $f3->route('POST /Login',
     $stmt = $db->prepare('INSERT INTO AccesoToken (id_Usuario, token, fecha) VALUES (?, ?, NOW())');
     $stmt->execute([$user['id'], $T]);
 
-		echo "{\"R\":0,\"D\":\"".$T."\"}";
+		echo "{\"R\":0}";
 	}
 );
 
@@ -169,7 +169,7 @@ $f3->route('POST /Imagen',
 			return;
 		}
 		
-		$dbcnf = loadDatabaseSettings('db.json');
+		$dbcnf = loadDatabaseSettings('conect_db_00t.json');
 		$db=new DB\SQL(
 			'mysql:host=localhost;port='.$dbcnf['port'].';dbname='.$dbcnf['dbname'],
 			$dbcnf['user'],
@@ -205,7 +205,7 @@ $f3->route('POST /Imagen',
 
 		// Mover archivo a su nueva locacion
 		rename('tmp/'.$id_Usuario,'img/'.$idImagen.'.'.$jsB['ext']);
-		echo "{\"R\":0,\"D\":".$idImagen."}";
+		echo "{\"R\":0}";
 	}
 );
 /*
