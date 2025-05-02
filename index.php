@@ -36,7 +36,7 @@ $f3->route('GET /saludo/@nombre',
 
 $f3->route('POST /Registro',
 	function($f3) {
-		$dbcnf = loadDatabaseSettings('db.json');
+		$dbcnf = loadDatabaseSettings('conect_db_00t.json.json');
 		$db=new DB\SQL(
 			'mysql:host=localhost;port='.$dbcnf['port'].';dbname='.$dbcnf['dbname'],
 			$dbcnf['user'],
