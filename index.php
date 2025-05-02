@@ -239,7 +239,12 @@ $f3->route('POST /Descargar',
 		$TKN = $jsB['token'];
 		$idImagen = $jsB['id'];
 		try {
-      $stmt = $db->prepare('SELECT id_Usuario FROM AccesoToken WHERE token = ?');
+      $stmt = $db->prepare('SELECT i.name, i.ruta 
+                     FROM Imagen i 
+                     INNER JOIN AccesoToken a ON i.id_Usuario = a.id_Usuario 
+                     WHERE i.id = ? AND a.token = ?');
+      $stmt->execute([$idImagen, $TKN]); // Añadir $TKN como parámetro
+
       $stmt->execute([$TKN]);
       $R = $stmt->fetchAll();
 		} catch (Exception $e) {
