@@ -65,7 +65,7 @@ $f3->route('POST /Registro',
 			echo '{"R":-2}';
 			return;
 		}
-    echo '{"R":0}';
+		echo "{\"R\":0}";
 	}
 );
 
