@@ -65,7 +65,7 @@ $f3->route('POST /Registro',
 			echo '{"R":-2}';
 			return;
 		}
-		echo "{\"R\":0,\"D\":".var_export($R,TRUE)."}";
+    echo '{"R":0}';
 	}
 );
 
