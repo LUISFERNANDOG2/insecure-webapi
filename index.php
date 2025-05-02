@@ -71,8 +71,11 @@ $f3->route('POST /Registro',
 		// TODO validar correo en json
 		// TODO Control de error de la $DB
 		try {
-      $stmt = $db->prepare('INSERT INTO Usuario (id, uname, email, password) VALUES (null, ?, ?, md5(?))');
-      $R = $stmt->execute([$jsB['uname'], $jsB['email'], $jsB['password']]);
+
+      $stmt = $db->prepare('INSERT INTO Usuario (id, uname, email, password) VALUES (null, ?, ?, ?)');
+      $hashedPassword = password_hash($jsB['password'], PASSWORD_DEFAULT);
+      $R = $stmt->execute([$jsB['uname'], $jsB['email'], $hashedPassword]);
+
 		} catch (Exception $e) {
 			echo '{"R":-2}';
 			return;
@@ -120,15 +123,18 @@ $f3->route('POST /Login',
 		// TODO Control de error de la $DB
 		try {
 
-      $stmt = $db->prepare('SELECT id FROM Usuario WHERE uname = ? AND password = md5(?)');
-      $stmt->execute([$jsB['uname'], $jsB['password']]);
-      $R = $stmt->fetchAll();
+      $stmt = $db->prepare('SELECT id, password FROM Usuario WHERE uname = ?');
+      $stmt->execute([$jsB['uname']]);
+      $user = $stmt->fetch();
+
+      if ($user && password_verify($jsB['password'], $user['password'])) {
+        // Autenticación exitosa
+      } else {
+        echo '{"R":-3}';
+        return;
+      }
 		} catch (Exception $e) {
 			echo '{"R":-2}';
-			return;
-		}
-		if (empty($R)){
-			echo '{"R":-3}';
 			return;
 		}
 		$T = getToken();
