@@ -123,9 +123,12 @@ $f3->route('POST /Login',
 			return;
 		}
 		$T = getToken();
-		//file_put_contents('/tmp/log','insert into AccesoToken values('.$R[0].',"'.$T.'",now())');
-		$db->exec('Delete from AccesoToken where id_Usuario = "'.$R[0]['id'].'";');
-		$R = $db->exec('insert into AccesoToken values('.$R[0]['id'].',"'.$T.'",now())');
+
+    $stmt = $db->prepare('DELETE FROM AccesoToken WHERE id_Usuario = ?');
+    $stmt->execute([$user['id']]);
+    $stmt = $db->prepare('INSERT INTO AccesoToken (id_Usuario, token, fecha) VALUES (?, ?, NOW())');
+    $stmt->execute([$user['id'], $T]);
+
 		echo "{\"R\":0,\"D\":\"".$T."\"}";
 	}
 );
@@ -175,7 +178,9 @@ $f3->route('POST /Imagen',
 		$TKN = $jsB['token'];
 		
 		try {
-			$R = $db->exec('select id_Usuario from AccesoToken where token = "'.$TKN.'"');
+      $stmt = $db->prepare('SELECT id_Usuario FROM AccesoToken WHERE token = ?');
+      $stmt->execute([$TKN]);
+      $R = $stmt->fetchAll();
 		} catch (Exception $e) {
 			echo '{"R":-2}';
 			return;
@@ -186,10 +191,13 @@ $f3->route('POST /Imagen',
 		////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////
 		// Guardar info del archivo en la base de datos
-		$R = $db->exec('insert into Imagen values(null,"'.$jsB['name'].'","img/",'.$id_Usuario.');');
-		$R = $db->exec('select max(id) as idImagen from Imagen where id_Usuario = '.$id_Usuario);
-		$idImagen = $R[0]['idImagen'];
-		$R = $db->exec('update Imagen set ruta = "img/'.$idImagen.'.'.$jsB['ext'].'" where id = '.$idImagen);
+
+    $stmt = $db->prepare('INSERT INTO Imagen (name, ruta, id_Usuario) VALUES (?, ?, ?)');
+    $stmt->execute([$jsB['name'], 'img/', $id_Usuario]);
+    $idImagen = $db->lastInsertId();
+    $stmt = $db->prepare('UPDATE Imagen SET ruta = ? WHERE id = ?');
+    $stmt->execute(["img/$idImagen.$ext", $idImagen]);
+
 		// Mover archivo a su nueva locacion
 		rename('tmp/'.$id_Usuario,'img/'.$idImagen.'.'.$jsB['ext']);
 		echo "{\"R\":0,\"D\":".$idImagen."}";
@@ -231,7 +239,9 @@ $f3->route('POST /Descargar',
 		$TKN = $jsB['token'];
 		$idImagen = $jsB['id'];
 		try {
-			$R = $db->exec('select id_Usuario from AccesoToken where token = "'.$TKN.'"');
+      $stmt = $db->prepare('SELECT id_Usuario FROM AccesoToken WHERE token = ?');
+      $stmt->execute([$TKN]);
+      $R = $stmt->fetchAll();
 		} catch (Exception $e) {
 			echo '{"R":-2}';
 			return;
@@ -239,7 +249,10 @@ $f3->route('POST /Descargar',
 		
 		// Buscar imagen y enviarla
 		try {
-			$R = $db->exec('Select name,ruta from  Imagen where id = '.$idImagen);
+      $stmt = $db->prepare('SELECT name, ruta FROM Imagen WHERE id = ?');
+      $stmt->execute([$idImagen]);
+      $R = $stmt->fetchAll();
+
 		}catch (Exception $e) {
 			echo '{"R":-3}';
 			return;
