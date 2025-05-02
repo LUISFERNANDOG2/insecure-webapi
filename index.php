@@ -188,7 +188,9 @@ $f3->route('POST /Imagen',
 			return;
 		}
 		$id_Usuario = $R[0]['id_Usuario'];
-		file_put_contents('tmp/'.$id_Usuario,base64_decode($jsB['data']));
+    $tempName = bin2hex(random_bytes(16)); // Nombre aleatorio
+    file_put_contents("tmp/$tempName", ...);
+
 		$jsB['data'] = '';
 		////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////
