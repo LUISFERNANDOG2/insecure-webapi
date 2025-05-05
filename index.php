@@ -36,7 +36,7 @@ $f3->route('GET /saludo/@nombre',
 
 $f3->route('POST /Registro',
 	function($f3) {
-		$dbcnf = loadDatabaseSettings('conect_db_00t.json.json');
+		$dbcnf = loadDatabaseSettings('conect_db_00t.json');
 		$db=new DB\SQL(
 			'mysql:host=localhost;port='.$dbcnf['port'].';dbname='.$dbcnf['dbname'],
 			$dbcnf['user'],
@@ -129,7 +129,7 @@ $f3->route('POST /Login',
     $stmt = $db->prepare('INSERT INTO AccesoToken (id_Usuario, token, fecha) VALUES (?, ?, NOW())');
     $stmt->execute([$user['id'], $T]);
 
-		echo "{\"R\":0}";
+    echo "{\"R\":0,\"D\":\"".$T."\"}";
 	}
 );
 
@@ -189,22 +189,26 @@ $f3->route('POST /Imagen',
 		}
 		$id_Usuario = $R[0]['id_Usuario'];
     $tempName = bin2hex(random_bytes(16)); // Nombre aleatorio
-    file_put_contents("tmp/$tempName", ...);
+    file_put_contents("tmp/$tempName", $jsB['data']);
 
-		$jsB['data'] = '';
 		////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////
 		// Guardar info del archivo en la base de datos
 
     $stmt = $db->prepare('INSERT INTO Imagen (name, ruta, id_Usuario) VALUES (?, ?, ?)');
-    $stmt->execute([$jsB['name'], 'img/', $id_Usuario]);
+    $ruta = "img/$idImagen.$ext";
+
+    $ruta = "img/$idImagen.$ext";
+    $stmt->execute([$jsB['name'], $ruta, $id_Usuario]);
+
     $idImagen = $db->lastInsertId();
     $stmt = $db->prepare('UPDATE Imagen SET ruta = ? WHERE id = ?');
 
     $stmt->execute(["img/$idImagen.$ext", $idImagen]);
 
 		// Mover archivo a su nueva locacion
-		rename('tmp/'.$id_Usuario,'img/'.$idImagen.'.'.$jsB['ext']);
+    rename("tmp/$tempName", "img/$idImagen.$ext");
+
 		echo "{\"R\":0}";
 	}
 );
